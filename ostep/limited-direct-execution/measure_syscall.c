@@ -15,6 +15,6 @@ int main(int argc, char* argv[]) {
 
   gettimeofday(&end, NULL);
   double elapsed = (end.tv_sec - start.tv_sec) * 1e6 + (end.tv_usec - start.tv_usec);
-  printf("Average system call time: %f microseconds\n", elapsed / 1000000);
+  printf("Avg. read() syscall time: %f μs\n", elapsed / 1000000);
 
 }

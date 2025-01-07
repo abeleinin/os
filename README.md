@@ -7,7 +7,7 @@ Learning operating systems from the ground up
 | Topics |
 |------------------|
 |  [Process API](https://github.com/abeleinin/os/tree/main/ostep/process-api) |
-|  [Limited Direct Execution](https://github.com/abeleinin/os/tree/main/ostep/limited-direct-exectuion) |
+|  [Limited Direct Execution](https://github.com/abeleinin/os/tree/main/ostep/limited-direct-execution) |
 
 ## Resources
 
