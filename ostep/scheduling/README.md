@@ -37,7 +37,25 @@ $$
 
 ## First In, First Out (FIFO)
 
-Most basic algorithm we can implement is known as First In, First Out (FIFO) schdeuling or something First Come, First Served (FCFS). This approach performs poorly when the first job is significantly longer than the rest, causing a high average turnaround time. This is referred to as the **convoy effect**, where a number of relatively-short potential consumers of a resource get queued behind a heavyweight resource consumer.
+Most basic algorithm we can implement is known as First In, First Out (FIFO) scheduling or something First Come, First Served (FCFS). This approach performs poorly when the first job is significantly longer than the rest, causing a high average turnaround time. This is referred to as the **convoy effect**, where a number of relatively-short potential consumers of a resource get queued behind a heavyweight resource consumer.
+
+- [fcfs.c](https://github.com/abeleinin/os/blob/main/ostep/scheduling/fcfs.c)
+
+```
+Enter number of processes: 4
+Enter arrival time and burst time for process 1: 10 5
+Enter arrival time and burst time for process 2: 4 10
+Enter arrival time and burst time for process 3: 7 3
+Enter arrival time and burst time for process 4: 0 8
+
+Process Arrival Burst   Wait    Turnaround
+4       0       8       0       8
+2       4       10      4       14
+3       7       3       11      14
+1       10      5       11      16
+```
+
+Simple simulated FCFS algorithm. Example output shows calculated wait time and turnaround time for each process.
 
 ## Shortest Job First (SJF)
 
@@ -129,7 +147,7 @@ When a task is selected to run, its pass value is incremented by its stride, and
 Niceness weights allow us to compute the effective time slice of each process, but now accounting for their priority differences:
 
 $$
-\text{time\_slice}_{k} = \frac{\text{weight}_{k}}{\sum_{i=0}^{n-1}\text{weight}_{i}} \cdot \text{sched\_latency}
+\text{time_slice}_{k} = \frac{\text{weight}_{k}}{\sum_{i=0}^{n-1}\text{weight}_{i}} \cdot \text{sched_latency}
 $$
 
 Updated `vruntime` calculation:
