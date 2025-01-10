@@ -9,6 +9,7 @@ Learning operating systems from the ground up
 |  [Process API](https://github.com/abeleinin/os/tree/main/ostep/process-api) |
 |  [Limited Direct Execution](https://github.com/abeleinin/os/tree/main/ostep/limited-direct-execution) |
 |  [Scheduling](https://github.com/abeleinin/os/tree/main/ostep/scheduling) |
+|  [Virtualizing Memory](https://github.com/abeleinin/os/tree/main/ostep/virtualizing-memory) |
 
 ## Resources
 
