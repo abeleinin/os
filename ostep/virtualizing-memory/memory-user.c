@@ -18,5 +18,7 @@ int main(int argc, char* argv[]) {
     printf("arr %d: %p\n", i, &arr[i]);
   }
 
+  free(arr);
+
   return 0;
 }
