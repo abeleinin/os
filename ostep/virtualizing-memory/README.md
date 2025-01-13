@@ -121,3 +121,52 @@ void free(void *ptr);
     - Simply returns `ptr` (no storage is allocated)
     - Even though storage isn’t allocated, the constructor of the object is still called, so that the object is fully initialized.
     - Use when precise memory control is required, such as with pre-allocated buffers, custom allocators, or real-time systems.
+
+Newer programming languages support **automatic memory management** by way of a **garbage collection**.
+
+### Common Errors
+
+- Forgetting to allocate memory
+    ```c
+    char* src = "hello";
+    char* dst;        // unallocated ptr
+    strcpy(dst, src); // segfault
+    ```
+- **Buffer Overflow**: Not allocating enough memory 
+    ```c
+    char* src = "hello";
+    char* dst = (char*) malloca(strlen(src)); // too small
+    strcpy(dst, src); // works properly
+    ```
+    - The code above often runs, but it still is incorrect because the `strcpy` writes 1 bit past the end of the allocated space. 
+    - Overflow can be the cause of many security vulnerabilities
+- Forgetting to initialize allocated memory
+    ```c
+    int* arr = (int*) malloc(sizeof(int) * 5);
+    printf("%d\n", arr[0]); // arr[0] is never initialized to a value
+    ```
+- **Memory Leak**: Forgetting to free memory
+    ```c
+    int main () {
+        int* arr = (int*) malloc(sizeof(int) * 5);
+        // free(arr); // missing free
+        return 0;
+    }
+    ```
+    - Get into the habit of freeing each and every byte you explicity allocate.
+    - Garbage-collected languages are still susceptible if you have a reference to some memory, the garbage collector will never free it
+    - No memory is leaked once a process exits because the operating system will reclaim *all* the memory of the process (consider bad form)
+- **Dangling pointer**: Pointer to deallocated or freed memory.
+    ```c
+    int* arr = (int*) calloc(5, sizeof(int));
+    printf("arr[0]=%d\n", arr[0]);
+    free(arr);
+    printf("arr[0]=%d\n", arr[0]); // arr is a dangling pointer
+    ```
+- **Double free**: Freeing memory more than once
+    ```c
+    int* arr = (int*) calloc(5, sizeof(int));
+    free(arr);
+    free(arr); // double free
+    // malloc: *** error for object 0x600002071240: pointer being freed was not allocated
+    ```
