@@ -2,6 +2,8 @@
 
 - [Address Space](#address-space)
 - [Virtual Memory](#virtual-memory)
+- [Memory Api](#memory-api)
+- [Address Translation](#address-translation)
 
 ## Address Space
 
@@ -170,3 +172,22 @@ Newer programming languages support **automatic memory management** by way of a 
     free(arr); // double free
     // malloc: *** error for object 0x600002071240: pointer being freed was not allocated
     ```
+
+## Address Translation
+
+- **Address translation**: Transforms hardware memory accesses (ie, an instruction fetch, load, or store), changing the virtual address provided by the instruction to a physical address where the desired information is actually located.
+- Goal: Programs should have their own private memory, where its own code and data resides.
+- Disassemble tools: Linux=`objdump`, Mac=`otool`, or Compiler Explorer online
+- **Address space**: From the programmers perspective, address space starts at address 0 and grows to 16 KB.
+
+### Dynamic (Hardware-based) Relocation
+
+- Two hardware registers within each CPU: one is called the **base** register, and the other the **bound** (or **limit** register).
+- The base registers is used to transform virtual addresses into physical addresses. A bound (or limit) register ensures that such addresses are within the confines of the address space
+- **Memory Management Unit (MMU)** On-chip circuitry to support sophisticated memory-management techniques.
+- **Program status word** is a register that performs the function of a status register and program counter. This is where we could indicate to the CPU which mode we're in.
+- **Process control block (PCB)**
+    - A data structure that stores information about a process being managed by an OS
+    - Process state, program counter, register values (base/bound), I/O device allocation, priority, open files
+- **Internal fragmentation**: Allocated space within a process that's not being used (a fragment). Space between stack and heap.
+
