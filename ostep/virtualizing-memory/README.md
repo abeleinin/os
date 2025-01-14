@@ -4,6 +4,7 @@
 - [Virtual Memory](#virtual-memory)
 - [Memory Api](#memory-api)
 - [Address Translation](#address-translation)
+- [Segmentation](#segmentation)
 
 ## Address Space
 
@@ -190,4 +191,68 @@ Newer programming languages support **automatic memory management** by way of a 
     - A data structure that stores information about a process being managed by an OS
     - Process state, program counter, register values (base/bound), I/O device allocation, priority, open files
 - **Internal fragmentation**: Allocated space within a process that's not being used (a fragment). Space between stack and heap.
+
+## Segmentation 
+
+Memory management technique where a process's addres space is divided into multiple, variable-sized segments. Each logical division of memory are assigned base and bound pairs per segment. 
+
+- **Sparse address space**: Address spaces with large amounts unused memory.
+- **Segmentaion fault**: Arises from memory access on a segmented machine to an illegal address. The term persists in computing, even on machines with no support for segmentation.
+
+### Explicit Segmentation
+
+Chop up the address space into segments based on the top few bits of the virtual address.
+
+Implementation of explicit segmentation from address space to physical memory ([OSTEP Segmentation](https://pages.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf#page=3)).
+
+```c
+// 14-bit virtual address
+//
+// Segment | Offset
+//   13 12 | 11 10 09 08 07 06 05 04 03 02 01 00
+//    0  1 |  0  0  0  0  0  1  1  0  1  0  0  0
+```
+
+- [explicit_segmentation.c](explicit_segmentation.c)
+
+```c
+#include <stdio.h>
+#include <signal.h>
+
+#define SEG_MASK 0x3000
+#define SEG_SHIFT 12
+#define OFFSET_MASK 0xFFF
+
+// Segment sizes:
+// Code 2K, Heap 3K, Stack 2K
+int Bounds[3] = {2048, 3072, 2048};
+
+// Base (Physical address):
+// Code 32K, Heap 34K, Stack 28K
+int Base[3] = {32768, 34816, 28672};
+
+int main() {
+  // get top 2 bits of 14-bit virtual address
+  // virtual address is just 4200 in decimal
+  unsigned int virtualAddress = 0b01000001101000;
+  int segment = (virtualAddress & SEG_MASK) >> SEG_SHIFT;
+
+  // get offset
+  int offset = virtualAddress & OFFSET_MASK;
+
+  printf("segment=%d\n", segment);
+  printf("offset=%d\n", offset);
+
+  // hypothetically...
+  if (offset >= Bounds[segment]) {
+    printf("RaiseException(PROTECTION_FAULT)\n");
+    raise(SIGSEGV);
+  } else {
+    int physicalAddress = Base[segment] + offset;
+    printf("register=AccessMemory(PhysicalAddress=%d)\n", physicalAddress);
+  }
+
+  return 0;
+}
+```
 
