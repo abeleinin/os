@@ -6,6 +6,7 @@
 - [Address Translation](#address-translation)
 - [Segmentation](#segmentation)
 - [Free-Space Management](#free-space-management)
+- [Additional Reading](#additional-reading)
 
 ## Address Space
 
@@ -283,3 +284,9 @@ typedef struct {
     - `size` of allocated region
     - `magic` number for integrity checking
     - sometimes additional pointers to speed up deallocation
+
+## Additional Reading
+
+- [Intel 64 and IA-32 Architectures](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
+- [ARM Architecture Reference Manual](https://www.cs.utexas.edu/~simon/378/resources/ARMv7-AR_TRM.pdf)
+- [Dynamic Storage Allocation: A Survey and Critical Review](https://www.cs.hmc.edu/~oneill/gc-library/Wilson-Alloc-Survey-1995.pdf)
