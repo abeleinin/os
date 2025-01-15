@@ -5,6 +5,7 @@
 - [Memory Api](#memory-api)
 - [Address Translation](#address-translation)
 - [Segmentation](#segmentation)
+- [Free-Space Management](#free-space-management)
 
 ## Address Space
 
@@ -256,3 +257,29 @@ int main() {
 }
 ```
 
+## Free-Space Management
+
+- **External fragmentation**: Free space gets chopped into little pieces of different sizes and is thus fragmented; subsequent requests may fail because there's no single contiguous space.
+- **Internal fragmentation**: If an allocator hands out chunks of memory bigger than that requested.
+
+### Splitting and Coalescing 
+
+- **Splitting**: Finds available memory chunk that satisfies the request and splits it into two.
+    - Commonly used when requests are smaller than the size of any particular free chunk.
+- **Coalescing**: If a newly free chunk has a neighbor that's also free, merge them into a single larger free chunk.
+
+### Tracking allocated regions size
+
+- Spoiler... Allocators store extra information in a **header** block kept above the allocated space.
+
+```c
+typedef struct {
+    int size;
+    int magic;
+} header_t;
+```
+
+- Headers contain:
+    - `size` of allocated region
+    - `magic` number for integrity checking
+    - sometimes additional pointers to speed up deallocation
