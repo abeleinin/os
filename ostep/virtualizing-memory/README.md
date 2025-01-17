@@ -258,6 +258,18 @@ int main() {
 }
 ```
 
+### Fine-grained vs. Course-grained Segmentation
+
+- **Course-grained**: Systems with just a frew segments (ie, code, stack, heap)
+- **Fine-grained**: Early systems were more flexible and allowed for address spaces to consist of many smaller segments.
+    - Many segments require additional hardware support with a **segment table**
+
+### OS Support
+
+- `brk` and `sbrk` system calls change the amount of space allocated for the calling process's data segment
+    - `brk` function sets the break value to ends and changes the allocated space accordingly.
+    - `sbrk` functions adds `incr` function bytes to the break value and changes the allocated space accordingly.
+
 ## Free-Space Management
 
 - **External fragmentation**: Free space gets chopped into little pieces of different sizes and is thus fragmented; subsequent requests may fail because there's no single contiguous space.
@@ -285,8 +297,44 @@ typedef struct {
     - `magic` number for integrity checking
     - sometimes additional pointers to speed up deallocation
 
+When a user calls the `free` function, it might looks something like:
+
+```c
+void free(void* ptr) {
+    header_t* hptr = (header_t*) ptr - 1;
+}
+```
+
+When a user requests *N* bytes of memory, the library actually allocates a chunk of *N* + `sizeof(header_t)`.
+
+Now, here is what the **Free List** data structure might look like:
+
+```c
+typedef struct __node_t {
+    int              size;
+    struct __node_t *next;
+} node_t;
+```
+
+### Managing Free-Space 
+
+> Trying to optimize for both speed and minimizing fragmentation.
+
+1. **Best Fit**: Search the entire list, find the smallest chunk that fits the users request.
+2. **Worst Fit**: Search the entire list, find the largest chuck and return the requested amount.
+3. **First Fit**: Finds the first chuck that's big enough and returns the requested amount.
+4. **Next Fit**: Same as first fit, but uses an extra pointer to the location you we're previous looking.
+
+### Other Approaches
+
+- **Segregated lists**: If a particular process has one (or a few) popular-sized requests, keep a separate list just to manage object of that size; all other requests are forwarded to a more general memory allocator.
+- **Slab allocator**: When a given cache runs low on free space it requests some **slabs** of memory from a more general memory allocator. Slab allocator avois frequent initialization and destruction sycles by keeping freed objects in a particular list in their initialized state thus lowering overhead.
+- **Buddy allocation**: Free memory is conceptually thought of as one big space of size $2^N$. Uses recursive search that divides free space by two until a block big enough to accomodate the request is found. When freeing data, the allocator checks if their "buddy" (or neighboring block) is free; if so, it coalesces the two blocks.
+
 ## Additional Reading
 
 - [Intel 64 and IA-32 Architectures](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [ARM Architecture Reference Manual](https://www.cs.utexas.edu/~simon/378/resources/ARMv7-AR_TRM.pdf)
 - [Dynamic Storage Allocation: A Survey and Critical Review](https://www.cs.hmc.edu/~oneill/gc-library/Wilson-Alloc-Survey-1995.pdf)
+- [A Scalable Concurrent malloc(3) Implementation for FreeBSD](https://hydra.azilian.net/Papers/jemalloc.pdf)
+- [Understanding glibc malloc](https://sploitfun.wordpress.com/2015/02/10/understanding-glibc-malloc/)
