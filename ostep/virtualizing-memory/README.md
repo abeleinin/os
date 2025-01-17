@@ -272,6 +272,8 @@ int main() {
 
 ## Free-Space Management
 
+- [free_space_management.c](./free_space_management.c)
+
 - **External fragmentation**: Free space gets chopped into little pieces of different sizes and is thus fragmented; subsequent requests may fail because there's no single contiguous space.
 - **Internal fragmentation**: If an allocator hands out chunks of memory bigger than that requested.
 
