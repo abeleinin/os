@@ -6,6 +6,7 @@
 - [Address Translation](#address-translation)
 - [Segmentation](#segmentation)
 - [Free-Space Management](#free-space-management)
+- [Paging](#paging)
 - [Additional Reading](#additional-reading)
 
 ## Address Space
@@ -332,6 +333,24 @@ typedef struct __node_t {
 - **Segregated lists**: If a particular process has one (or a few) popular-sized requests, keep a separate list just to manage object of that size; all other requests are forwarded to a more general memory allocator.
 - **Slab allocator**: When a given cache runs low on free space it requests some **slabs** of memory from a more general memory allocator. Slab allocator avois frequent initialization and destruction sycles by keeping freed objects in a particular list in their initialized state thus lowering overhead.
 - **Buddy allocation**: Free memory is conceptually thought of as one big space of size $2^N$. Uses recursive search that divides free space by two until a block big enough to accomodate the request is found. When freeing data, the allocator checks if their "buddy" (or neighboring block) is free; if so, it coalesces the two blocks.
+
+## Paging
+
+- **Paging**: Dividing memory into *fixed-sized* pieces.
+    - Logical segments (ie code, stack, heap) are now divided into fixed-sized units
+    - Physical memory can now be viewed as a fixed-sized slots called **page frames**
+- **Page table**: Are a *per-process* data structure which stores **address translations for each of the virtual pages of the addres space.
+    - Page table usual implemented as a multi-level table or inverted page table
+- **Virtual Page Number (VPN)**: Indicates the page to select
+- **Offset**: Indicates the byte we're interested in. 
+    - The offset is not translated because the offset just tells us which btye within the page we want.
+- **Physical Frame Number (PFN) / Physical Page Number (PPN)**: Use the VPN to index the page table to get the PFN
+
+### Paging questions
+
+- Where are these page tables stored?
+- What are the typical contents of the page table? 
+- How big are the tables?
 
 ## Additional Reading
 
