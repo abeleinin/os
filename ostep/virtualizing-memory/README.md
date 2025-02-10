@@ -6,7 +6,8 @@
 - [Address Translation](#address-translation)
 - [Segmentation](#segmentation)
 - [Free-Space Management](#free-space-management)
-- [Paging](#paging)
+- [Paging: Introduction](#paging-introduction)
+- [Paging: Faster Translations (TLBs)](#paging-faster-translations)
 - [Additional Reading](#additional-reading)
 
 ## Address Space
@@ -334,12 +335,12 @@ typedef struct __node_t {
 - **Slab allocator**: When a given cache runs low on free space it requests some **slabs** of memory from a more general memory allocator. Slab allocator avois frequent initialization and destruction sycles by keeping freed objects in a particular list in their initialized state thus lowering overhead.
 - **Buddy allocation**: Free memory is conceptually thought of as one big space of size $2^N$. Uses recursive search that divides free space by two until a block big enough to accomodate the request is found. When freeing data, the allocator checks if their "buddy" (or neighboring block) is free; if so, it coalesces the two blocks.
 
-## Paging
+## Paging: Introduction
 
 - **Paging**: Dividing memory into *fixed-sized* pieces.
     - Logical segments (ie code, stack, heap) are now divided into fixed-sized units
     - Physical memory can now be viewed as a fixed-sized slots called **page frames**
-- **Page table**: Are a *per-process* data structure which stores **address translations for each of the virtual pages of the addres space.
+- **Page table**: Are a *per-process* data structure which stores address translations for each of the virtual pages of the address space. Used to map virtual addresses to physical addresses.
     - Page table usual implemented as a multi-level table or inverted page table
 - **Virtual Page Number (VPN)**: Indicates the page to select
 - **Offset**: Indicates the byte we're interested in. 
@@ -351,6 +352,39 @@ typedef struct __node_t {
 - Where are these page tables stored?
 - What are the typical contents of the page table? 
 - How big are the tables?
+
+### x86 Page Table Entry (PTE)
+
+```c
+// 31 ------------------------- 12 ---- 11 ---- 9 -- 8 -- 7 -- 6 -- 5 -- 4 -- 3 -- 2 -- 1 -- 0
+//              PFN                                  G   PAT   D    A   PCD  PWT  U/S  R/W   P
+// 31 ------------------------- 12 ---- 11 ---- 9 -- 8 -- 7 -- 6 -- 5 -- 4 -- 3 -- 2 -- 1 -- 0
+```
+
+- Present bit (P): Indicates whether this page is in physical memory or on disk
+- Read / write bit (R/W): Determines if writes are allowed
+- User / supervisor bit (U/S): Determines if user-mode processes can acess the page
+- (PWT, PCD, PAT, and G): Determine how hardware caching works
+- Reference bit (ie Accessed bit) (A): Used to track whether a page has been accessed
+- Dirty bit (D): Indicates whether a page has been modified since it was brought into memory
+- Page frame number (PFN): The physical address of the page divided by PAGE_SIZE
+- [Intel 64 and IA-32 Architectures](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) for more detail
+
+### Speed
+
+- Paging requires us to perform 1 extra memory reference, fetching the PTE
+- Memory accesses from disk are slow!!!
+
+## Paging Faster Translations
+
+- **Translation-lookaside buffer (TLB)**: Apart of the chip's memory-management unit (MMU), and is simply a hardware cache of popular virtual-to-physical address translations (also called address-translation cache).
+- **TLB hit**: When the TLB holds the translation for a given VPN
+- **TLB miss**: When the CPU doesn't find the translation for a given VPN in the TLB
+
+### Locality 
+
+- **Temporal locality**: An instruction or data item that has been recently accessed will likely be re-accessed soon in the future
+- **Spatial locality**: If a program accesses memory at address *x*, it will likely soon access memory near *x*
 
 ## Additional Reading
 
