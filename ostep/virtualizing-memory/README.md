@@ -386,6 +386,31 @@ typedef struct __node_t {
 - **Temporal locality**: An instruction or data item that has been recently accessed will likely be re-accessed soon in the future
 - **Spatial locality**: If a program accesses memory at address *x*, it will likely soon access memory near *x*
 
+### TLB miss
+
+- Hardware-managed TLBs: In CISC (Complex-Instruction Set Computers) the hardware would handle the TLB miss entirely. To do this, the hardware has to know exactly *where* the page tables are located in memory (via a **page table base register**).
+- Software-managed TLBs: In RISC (Reduced-Instruction Set Computers) the hardware simply raises an exception, which paused teh current instruction stream, raises teh privilege to kernel mode, and jumps to the **trap handler**.
+
+### TLB Contents
+
+```c
+// ----------------------
+// VPN | PFN | other bits
+// ----------------------
+```
+
+- A typical TLB might have 32, 64, or 128 entries and be what is called **fully associative**. 
+- **Fully associative caches** means that a entry block can be placed anywhere in cache (no fixed slots).
+- TLB commonly have a valid bit, protection bit, and 
+    - Valid bit: Determines if the entry has a vlid translation or not.
+    - Protection bit: Determine how a page can be accessed (i.e. code pages may be *read and execute*, heap pages may be *read and write*).
+    - Dirty bit: Determine if memory block has been modified since last saved.
+    - Address-space identifier: Identifies the process currently active on the CPU.
+
+### TLB Issues
+
+- On context switch TLBs are simply **flushed**, emptying all entries before running the next process.
+
 ## Additional Reading
 
 - [Intel 64 and IA-32 Architectures](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
