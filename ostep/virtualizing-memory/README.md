@@ -405,11 +405,12 @@ typedef struct __node_t {
     - Valid bit: Determines if the entry has a vlid translation or not.
     - Protection bit: Determine how a page can be accessed (i.e. code pages may be *read and execute*, heap pages may be *read and write*).
     - Dirty bit: Determine if memory block has been modified since last saved.
-    - Address-space identifier: Identifies the process currently active on the CPU.
+    - Address-space identifier (ASID): Identifies the process currently active on the CPU. Think of it as the PID, but usually it has fewer bits (eg. 8 bits for ASID vs. 32 bits for a PID).
 
 ### TLB Issues
 
 - On context switch TLBs are simply **flushed**, emptying all entries before running the next process.
+- **Cache replacement**: How to determine which entry to replace in your TLB when its full. A common approach is a LRU (least-recently-used) policy.
 
 ## Additional Reading
 
