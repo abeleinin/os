@@ -12,3 +12,7 @@
 
 - [concurrent_vector_addition.c](./concurrent_vector_addition.c)
 
+## Additional Reading
+
+- [Cooperating sequential processes](https://www.cs.utexas.edu/~EWD/transcriptions/EWD01xx/EWD123.html)
+
