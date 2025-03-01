@@ -332,7 +332,7 @@ typedef struct __node_t {
 ### Other Approaches
 
 - **Segregated lists**: If a particular process has one (or a few) popular-sized requests, keep a separate list just to manage object of that size; all other requests are forwarded to a more general memory allocator.
-- **Slab allocator**: When a given cache runs low on free space it requests some **slabs** of memory from a more general memory allocator. Slab allocator avois frequent initialization and destruction sycles by keeping freed objects in a particular list in their initialized state thus lowering overhead.
+- **Slab allocator**: When a given cache runs low on free space it requests some **slabs** of memory from a more general memory allocator. Slab allocator avoids frequent initialization and destruction cycles by keeping freed objects in a particular list in their initialized state thus lowering overhead.
 - **Buddy allocation**: Free memory is conceptually thought of as one big space of size $2^N$. Uses recursive search that divides free space by two until a block big enough to accomodate the request is found. When freeing data, the allocator checks if their "buddy" (or neighboring block) is free; if so, it coalesces the two blocks.
 
 ## Paging: Introduction
@@ -363,7 +363,7 @@ typedef struct __node_t {
 
 - Present bit (P): Indicates whether this page is in physical memory or on disk
 - Read / write bit (R/W): Determines if writes are allowed
-- User / supervisor bit (U/S): Determines if user-mode processes can acess the page
+- User / supervisor bit (U/S): Determines if user-mode processes can access the page
 - (PWT, PCD, PAT, and G): Determine how hardware caching works
 - Reference bit (ie Accessed bit) (A): Used to track whether a page has been accessed
 - Dirty bit (D): Indicates whether a page has been modified since it was brought into memory
@@ -389,7 +389,7 @@ typedef struct __node_t {
 ### TLB miss
 
 - Hardware-managed TLBs: In CISC (Complex-Instruction Set Computers) the hardware would handle the TLB miss entirely. To do this, the hardware has to know exactly *where* the page tables are located in memory (via a **page table base register**).
-- Software-managed TLBs: In RISC (Reduced-Instruction Set Computers) the hardware simply raises an exception, which paused teh current instruction stream, raises teh privilege to kernel mode, and jumps to the **trap handler**.
+- Software-managed TLBs: In RISC (Reduced-Instruction Set Computers) the hardware simply raises an exception, which paused the current instruction stream, raises the privilege to kernel mode, and jumps to the **trap handler**.
 
 ### TLB Contents
 
