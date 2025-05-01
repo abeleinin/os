@@ -41,7 +41,7 @@ public:
             Node* tail = m_dummy->m_prev;
             std::scoped_lock guard(m_dummy->m_mutex, tail->m_mutex); // C++17 class template argument deduction
 
-            Node* new_node = new Node(val, tail, m_dummy);
+            Node* new_node = new Node(val, m_dummy, tail);
 
             tail->m_next = new_node;
             m_dummy->m_prev = new_node;
@@ -87,15 +87,14 @@ int main() {
     dll->append(40);
     dll->append(50);
 
-    dll->reverse_print();
-    // std::vector<std::thread> threads;
+    std::vector<std::thread> threads;
 
-    // threads.emplace_back(&DoubleLinkedList::print, std::ref(*dll));
-    // threads.emplace_back(&DoubleLinkedList::reverse_print, std::ref(*dll));
+    threads.emplace_back(&DoubleLinkedList::print, std::ref(*dll));
+    threads.emplace_back(&DoubleLinkedList::reverse_print, std::ref(*dll));
 
-    // for (auto& t : threads) {
-    //     t.join();
-    // }
+    for (auto& t : threads) {
+        t.join();
+    }
 
     return 0;
 }
