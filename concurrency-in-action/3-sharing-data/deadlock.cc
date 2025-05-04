@@ -1,100 +1,34 @@
-#include <vector>
+#include <iostream>
 #include <thread>
 #include <mutex>
-#include <iostream>
+#include <chrono>
 
-struct Node {
-    Node(int val) : m_val(val) {}
+std::mutex mutexA;
+std::mutex mutexB;
 
-    Node(int val, Node* next, Node* prev) 
-        : m_val(val)
-        , m_next(next)
-        , m_prev(prev)
-    {}
+void thread1() {
+    std::lock_guard<std::mutex> lockA(mutexA);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Give thread2 time to lock mutexB
+    std::lock_guard<std::mutex> lockB(mutexB); // Deadlock likely here
 
-    int m_val;
-    Node* m_next;
-    Node* m_prev;
-    std::mutex m_mutex;
-};
+    std::cout << "Thread 1 acquired both mutexes\n";
+}
 
-class DoubleLinkedList {
-public:
-    DoubleLinkedList() { 
-        m_dummy = new Node(0);
-        m_dummy->m_next = m_dummy;
-        m_dummy->m_prev = m_dummy;
-        m_size = 0;
-    }
+void thread2() {
+    std::lock_guard<std::mutex> lockB(mutexB);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Give thread1 time to lock mutexA
+    std::lock_guard<std::mutex> lockA(mutexA); // Deadlock likely here
 
-    ~DoubleLinkedList(); // Probably should clean up the Node's allocated
-
-    void append(int val) {
-        if (m_size == 0) {
-            std::lock_guard guard(m_dummy->m_mutex);
-
-            Node* new_node = new Node(val, m_dummy, m_dummy);
-
-            m_dummy->m_next = new_node;
-            m_dummy->m_prev = new_node;
-        } else {
-            Node* tail = m_dummy->m_prev;
-            std::scoped_lock guard(m_dummy->m_mutex, tail->m_mutex); // C++17 class template argument deduction
-
-            Node* new_node = new Node(val, m_dummy, tail);
-
-            tail->m_next = new_node;
-            m_dummy->m_prev = new_node;
-        }
-
-        ++m_size;
-    }
-
-    void print() const {
-        int i = 0;
-        Node* curr = m_dummy->m_next;
-        while (i < m_size) {
-            std::lock_guard guard(curr->m_mutex);
-            std::cout << "Node " << i << " = " << curr->m_val << std::endl;
-            curr = curr->m_next;
-            ++i;
-        }
-    }
-
-    void reverse_print() const {
-        int i = 0;
-        Node* curr = m_dummy->m_prev;
-        while (i < m_size) {
-            std::lock_guard guard(curr->m_mutex);
-            std::cout << "Node " << i << " = " << curr->m_val << std::endl;
-            curr = curr->m_prev;
-            ++i;
-        }
-    }
-
-private:
-    Node* m_dummy;
-    size_t m_size = 0;
-};
+    std::cout << "Thread 2 acquired both mutexes\n";
+}
 
 int main() {
+    std::thread t1(thread1);
+    std::thread t2(thread2);
 
-    auto dll = new DoubleLinkedList();
+    t1.join();
+    t2.join();
 
-    dll->append(10);
-    dll->append(20);
-    dll->append(30);
-    dll->append(40);
-    dll->append(50);
-
-    std::vector<std::thread> threads;
-
-    threads.emplace_back(&DoubleLinkedList::print, std::ref(*dll));
-    threads.emplace_back(&DoubleLinkedList::reverse_print, std::ref(*dll));
-
-    for (auto& t : threads) {
-        t.join();
-    }
-
+    std::cout << "Finished execution\n";
     return 0;
 }
