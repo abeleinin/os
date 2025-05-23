@@ -12,6 +12,14 @@ Learning operating systems from the ground up
 |  [Virtualizing Memory](./ostep/virtualizing-memory/) |
 |  [Concurrency](./ostep/concurrency/) |
 
+## C++ Concurrency in Action
+
+| Topics |
+|--------|
+| [2. Managing Threads](./concurrency-in-action/2-managing-threads/) |
+| [3. Sharing Data](./concurrency-in-action/3-sharing-data/) |
+| [4. Synchronizing Concurrent Operations](./concurrency-in-action/4-synchronizing-concurrent-ops/) |
+
 ## Resources
 
 ### Textbooks
